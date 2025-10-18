@@ -7,7 +7,7 @@ import {
   IRespExitRoom,
   IRespJoinRoom, IRespKick, IRespPlayerReady, IRoomInfo, MsgEnum, TInfo
 } from "../../src/Net/index";
-import type { Client } from './Client';
+import { random_str, type Client } from './Client';
 import type { Context } from "./Context";
 
 let room_id = 0;
@@ -15,14 +15,17 @@ export class Room {
   static TAG = 'Room';
   readonly id = '' + (++room_id);
   readonly ctx: Context;
+  protected _code: string = '';
   owner: Client;
   min_players: number = 2;
   max_players: number = 4;
   title: string = `ROOM_${this.id}`;
   players = new Set<Client>();
+  get code() { return this._code; }
   get room_info(): Required<IRoomInfo> {
     return {
       title: this.title,
+      code: this._code,
       id: this.id,
       owner: this.owner.player_info!,
       players: Array.from(this.players).map(v => ({
@@ -34,8 +37,16 @@ export class Room {
     }
   }
   constructor(owner: Client, req: IReqCreateRoom) {
-    this.ctx = owner.ctx
+    const { ctx } = owner
+    this.ctx = ctx
     this.owner = owner;
+
+    while (!this._code || ctx.room_mgr.codes.has(this._code)) {
+      this._code = random_str();
+    }
+    ctx.room_mgr.add(this)
+
+
     this.title = req.title?.trim() || `${owner.player_info?.name}的房间`
     const { max_players = 4, min_players = 2 } = req
     if (typeof max_players === 'number' && max_players >= 2)
@@ -47,7 +58,7 @@ export class Room {
     this.players.add(owner);
     owner.room = this;
     owner.resp(req.type, req.pid, { room: this.room_info })
-    this.ctx.room_mgr.all.add(this)
+
   }
 
   ready(client: Client, req: IReqPlayerReady = { type: MsgEnum.PlayerReady, pid: '' }) {
@@ -90,7 +101,7 @@ export class Room {
     this.broadcast(req.type, resp, client)
     client.resp(req.type, req.pid, resp).catch(() => void 0)
     if (!this.players.size)
-      this.ctx.room_mgr.all.delete(room)
+      this.ctx.room_mgr.del(room)
   }
   exit(client: Client, req: IReqExitRoom = { type: MsgEnum.ExitRoom, pid: '' }) {
     console.log(`[${Room.TAG}::exit]`)
@@ -114,7 +125,7 @@ export class Room {
     client.resp(req.type, req.pid, resp).catch(() => void 0)
 
     if (!players.size)
-      this.ctx.room_mgr.all.delete(room)
+      this.ctx.room_mgr.del(room)
   }
 
   join(client: Client, req: IReqJoinRoom = { type: MsgEnum.JoinRoom, pid: '' }) {
@@ -161,7 +172,7 @@ export class Room {
     client.resp(req.type, req.pid, resp).catch(() => void 0)
     for (const pl of players) delete pl.room
     players.clear()
-    this.ctx.room_mgr.all.delete(this)
+    this.ctx.room_mgr.del(this)
   }
 
   start(client: Client, req: IReqRoomStart = { type: MsgEnum.RoomStart, pid: '' }) {

@@ -5,6 +5,13 @@ import { Room } from './Room';
 import { handle_req_chat } from './handle_req_chat';
 let client_id = 0;
 
+export function random_str(len = 8): string {
+  const n: number[] = []
+  for (let index = 0; index < len; index++)
+    n.push(65 + Math.floor(Math.random() * 24))
+  return String.fromCharCode(...n)
+}
+
 export function ensure_player_info(client: Client, req: TReq) {
   if (client.player_info) return true;
   client.resp(req.type, req.pid, {
@@ -84,7 +91,7 @@ export class Client {
     const { room } = this
     if (room?.owner === this) {
       room.close(this);
-      ctx.room_mgr.all.delete(room)
+      ctx.room_mgr.del(room)
     } else {
       room?.exit(this);
     }

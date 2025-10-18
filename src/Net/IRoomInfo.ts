@@ -5,6 +5,7 @@ export interface IRoomPlayerInfo extends IPlayerInfo {
 export interface IRoomInfo {
   title?: string;
   id?: string;
+  code?: string;
   owner?: Required<IPlayerInfo>;
   players?: Required<IRoomPlayerInfo>[];
   min_players?: number;
