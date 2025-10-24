@@ -6,8 +6,9 @@ import {
   IReqJoinRoom, IReqKick, IReqPlayerReady, IReqRoomStart, IResp, IRespCloseRoom,
   IRespExitRoom,
   IRespJoinRoom, IRespKick, IRespPlayerReady, IRoomInfo, MsgEnum, TInfo
-} from "../../src/Net/index";
-import { random_str, type Client } from './Client';
+} from "./Net";
+import { type Client } from './Client';
+import { random_str } from './random_str';
 import type { Context } from "./Context";
 
 let room_id = 0;

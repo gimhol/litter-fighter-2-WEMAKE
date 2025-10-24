@@ -1,49 +1,14 @@
 import type { RawData, WebSocket } from 'ws';
-import { ErrCode, IMsgRespMap, IPlayerInfo, IResp, MsgEnum, TInfo, TReq } from "../../src/Net/index";
+import { ErrCode, IMsgRespMap, IPlayerInfo, IResp, MsgEnum, TInfo, TReq } from "./Net";
 import type { Context } from './Context';
 import { Room } from './Room';
 import { handle_req_chat } from './handle_req_chat';
+import { ensure_in_room } from './ensure_in_room';
+import { ensure_room_owner } from './ensure_room_owner';
+import { ensure_not_in_room } from './ensure_not_in_room';
+import { ensure_player_info } from './ensure_player_info';
 let client_id = 0;
 
-export function random_str(len = 8): string {
-  const n: number[] = []
-  for (let index = 0; index < len; index++)
-    n.push(65 + Math.floor(Math.random() * 24))
-  return String.fromCharCode(...n)
-}
-
-export function ensure_player_info(client: Client, req: TReq) {
-  if (client.player_info) return true;
-  client.resp(req.type, req.pid, {
-    code: ErrCode.NotRegister,
-    error: 'player info not set!'
-  }).catch(() => void 0);
-  return false;
-}
-function ensure_not_in_room(client: Client, req: TReq) {
-  if (!client.room) return true;
-  client.resp(req.type, req.pid, {
-    code: ErrCode.AlreadyInRoom,
-    error: 'already in room'
-  }).catch(() => void 0);
-  return false;
-}
-export function ensure_in_room(client: Client, req: TReq) {
-  if (client.room) return true;
-  client.resp(req.type, req.pid, {
-    code: ErrCode.NotInRoom,
-    error: 'not in room'
-  }).catch(() => void 0);
-  return false;
-}
-function ensure_room_owner(client: Client, req: TReq) {
-  if (client.room?.owner === client) return true;
-  client.resp(req.type, req.pid, {
-    code: ErrCode.NotRoomOwner,
-    error: 'not owner'
-  });
-  return false;
-}
 export class Client {
   static readonly TAG = 'Client'
   readonly id = 'client_' + (++client_id);

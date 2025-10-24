@@ -1,5 +1,7 @@
-import { ErrCode, IReqChat, IRespChat, TInfo } from '../../src/Net/index';
-import { Client, ensure_in_room, ensure_player_info } from './Client';
+import { ErrCode, IReqChat, IRespChat, TInfo } from './Net';
+import type { Client } from './Client';
+import { ensure_in_room } from './ensure_in_room';
+import { ensure_player_info } from './ensure_player_info';
 
 let msg_seq = Date.now();
 export function handle_req_chat(client: Client, req: IReqChat) {

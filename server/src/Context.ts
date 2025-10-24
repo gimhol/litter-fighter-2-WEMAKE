@@ -1,6 +1,6 @@
 
 import type { WebSocketServer } from "ws";
-import type { IMsgRespMap, IResp, MsgEnum, TInfo } from "../../src/Net/index";
+import type { IMsgRespMap, IResp, MsgEnum, TInfo } from "./Net";
 import type { Client } from "./Client";
 import type { ClientMgr } from './ClientMgr';
 import type { Room } from "./Room";
