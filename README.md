@@ -1,6 +1,6 @@
 # Little Fighter 2: WEMAKE
 
-try it at [https://lf2.gim.ink/](https://lf2.gim.ink/)
+try it at [https://lf.gim.ink/](https://lf2.gim.ink/)
 
 玩法、美术、音效音乐来自"Litter Fighter 2", 原作：Marti Wong，Starsky Wong.
 
