@@ -1,4 +1,4 @@
-import { IPlayerInfo } from "./IPlayerInfo";
+import type { IPlayerInfo } from "./IPlayerInfo";
 
 /**
  * 房间内玩家信息

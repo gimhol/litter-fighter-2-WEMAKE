@@ -1,5 +1,5 @@
 import type { IReq, IResp } from './_Base';
-import { IPlayerInfo } from './IPlayerInfo';
+import type { IPlayerInfo } from './IPlayerInfo';
 import type { MsgEnum } from './MsgEnum';
 
 export interface IReqPlayerReady extends IReq<MsgEnum.PlayerReady> {

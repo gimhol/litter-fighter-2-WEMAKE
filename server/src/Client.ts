@@ -1,19 +1,24 @@
 import type { RawData, WebSocket } from 'ws';
-import { ErrCode, IMsgRespMap, IPlayerInfo, IResp, MsgEnum, TInfo, TReq } from "./Net";
 import type { Context } from './Context';
+import {
+  ErrCode, IMsgReqMap, IMsgRespMap, IPlayerInfo, IReq, IResp, ISendOpts,
+  MsgEnum, req_timeout_error, req_unknown_error, TInfo, TReq, TResp, IJob
+} from "./Net";
 import { Room } from './Room';
-import { handle_req_chat } from './handle_req_chat';
 import { ensure_in_room } from './ensure_in_room';
-import { ensure_room_owner } from './ensure_room_owner';
 import { ensure_not_in_room } from './ensure_not_in_room';
 import { ensure_player_info } from './ensure_player_info';
-let client_id = 0;
+import { ensure_room_owner } from './ensure_room_owner';
+import { handle_req_chat } from './handle_req_chat';
 
+let client_id = 0;
 export class Client {
   static readonly TAG = 'Client'
   readonly id = 'client_' + (++client_id);
   readonly ws: WebSocket;
   readonly ctx: Context;
+  protected _pid = 1;
+  protected _jobs = new Map<string, IJob>();
   player_info?: Required<IPlayerInfo>;
   room?: Room;
   ready: boolean = false;
@@ -24,6 +29,34 @@ export class Client {
     ws.on('close', this.handle_ws_close)
     ws.on('error', e => console.error(`客户端 ${this.id} 发生错误:`, e));
     ws.on('message', this.handle_ws_msg)
+  }
+
+  req<
+    T extends MsgEnum,
+    Req extends IReq = IMsgReqMap[T],
+    Resp extends IResp = IMsgRespMap[T]
+  >(type: T, msg: TInfo<Req>, options?: ISendOpts): Promise<Resp> {
+    const ws = this.ws;
+    if (!ws) return Promise.reject(new Error(`[${Client.TAG}] not open`))
+    const pid = `${++this._pid}`;
+    const _req: IReq = { pid, type, is_req: true, ...msg };
+    return new Promise<Resp>((resolve, reject) => {
+      const timeout = options?.timeout || 0;
+      const timerId = timeout > 0 ? setTimeout(() => {
+        this._jobs.delete(pid);
+        const error = req_timeout_error(_req, timeout)
+        reject(error);
+      }, timeout) : void 0;
+
+      this._jobs.set(pid, { resolve: resolve as any, timerId, reject, ...options });
+      try {
+        ws.send(JSON.stringify(_req));
+      } catch (e) {
+        clearTimeout(timerId)
+        const error = req_unknown_error(_req, e as Error)
+        reject(error)
+      }
+    });
   }
 
   resp<T extends MsgEnum, Resp extends IResp = IMsgRespMap[T]>(type: T, pid: string, resp: TInfo<Resp>) {
@@ -41,8 +74,14 @@ export class Client {
     const str = '' + msg;
     console.log(`[${Client.TAG}::handle_ws_msg] ${this.id} msg:`, str);
     try {
-      const req: TReq = JSON.parse(str);
-      this.handle_req(req)
+      const what: TReq | TResp = JSON.parse(str);
+      if ('is_resp' in what) {
+        // TODO: not now
+      } else if ('is_req' in what) {
+        this.handle_req(what)
+      } else {
+        // TODO: should not happen
+      }
     } catch (error) {
       console.error(`[${Client.TAG}::handle_ws_msg] 解析消息失败: ${error}`);
       this.resp(MsgEnum.Error, '', { code: ErrCode.ParseFailed, error: '消息格式错误' }).catch(() => void 0);

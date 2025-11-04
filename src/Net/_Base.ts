@@ -1,4 +1,4 @@
-import { MsgEnum } from "./MsgEnum";
+import type { MsgEnum } from "./MsgEnum";
 
 /**
  * 请求信息
