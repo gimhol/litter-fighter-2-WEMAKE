@@ -1,3 +1,4 @@
+import { useFloating, useForwardedRef, useStateRef } from "@fimagine/dom-hooks";
 import classNames from "classnames";
 import List from "rc-virtual-list";
 import { ForwardedRef, forwardRef, useCallback, useEffect, useRef } from "react";
@@ -7,13 +8,10 @@ import { Flex } from "../../Component/Flex";
 import Frame, { IFrameProps } from "../../Component/Frame";
 import Show from "../../Component/Show";
 import { Strong, Text } from "../../Component/Text";
-import { useStateRef } from "../../hooks/useStateRef";
 import { MsgEnum } from "../../Net";
 import { Connection } from "./Connection";
 import styles from "./styles.module.scss";
 import { TriState } from "./TriState";
-import { useFloating } from "./useFloating";
-import { useForwardedRef } from "./useForwardedRef";
 import { useRoom } from "./useRoom";
 import { useRooms } from "./useRooms";
 

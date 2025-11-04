@@ -22,6 +22,7 @@
     "tool-dev": "npm run build_tool && node ./tool --tool-dev"
   },
   "dependencies": {
+    "@fimagine/dom-hooks": "^1.0.1",
     "@fimagine/logger": "^1.2.1",
     "@fimagine/writeboard": "^0.0.12",
     "axios": "^1.10.0",
