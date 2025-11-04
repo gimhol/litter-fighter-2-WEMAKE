@@ -125,6 +125,8 @@ function _ChatBox(props: IChatBoxProps, fref: ForwardedRef<HTMLDivElement>) {
   const [ref_floating_view, on_ref] = useForwardedRef(fref)
   useFloating({
     responser: ref_floating_view.current,
+    pivot_x: 0,
+    pivot_y: 1,
     is_excluded: e => {
       return e.tagName === 'INPUT' || e.classList.contains(`rc-virtual-list-scrollbar-thumb`)
     }
