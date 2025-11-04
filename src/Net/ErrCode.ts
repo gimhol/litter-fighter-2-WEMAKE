@@ -1,3 +1,9 @@
+/**
+ * 错误编号
+ *
+ * @export
+ * @enum {number}
+ */
 export const enum ErrCode {
   Timeout = -2,
   Unknown = -1,
@@ -12,7 +18,7 @@ export const enum ErrCode {
   InvalidRoomParameters = 1008,
   ParseFailed = 1009,
   RoomIsFull = 1010,
-  ChatMsgEmpty,
-  ChatTargetEmpty,
-  ChatTargetIncorrect,
+  ChatMsgEmpty = 1011,
+  ChatTargetEmpty = 1012,
+  ChatTargetIncorrect = 1013,
 }

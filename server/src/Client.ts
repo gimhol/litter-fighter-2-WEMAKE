@@ -30,7 +30,7 @@ export class Client {
     return new Promise<void>((resolve, reject) => {
       if (!this.ws)
         return reject(new Error(`ws not open`))
-      const _resp: IResp = { pid, type, ...resp };
+      const _resp: IResp = { pid, type, is_resp: true, ...resp };
       this.ws.send(JSON.stringify(_resp), (err) => {
         err ? reject(err) : resolve()
       });

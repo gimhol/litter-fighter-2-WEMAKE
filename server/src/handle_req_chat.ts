@@ -1,16 +1,20 @@
-import { ErrCode, IReqChat, IRespChat, TInfo } from './Net';
 import type { Client } from './Client';
 import { ensure_in_room } from './ensure_in_room';
 import { ensure_player_info } from './ensure_player_info';
+import { ErrCode, IReqChat, IRespChat, TInfo } from './Net';
 
 let msg_seq = Date.now();
-export function handle_req_chat(client: Client, req: IReqChat) {
+
+export function handle_req_chat(client: Client, req: IReqChat): void {
   if (!ensure_player_info(client, req)) return;
   const { target, text, type, pid } = req;
-  if (!target)
-    return client.resp(type, pid, { code: ErrCode.ChatTargetEmpty, error: 'target can\'t be empty' });
-  if (!text)
-    return client.resp(type, pid, { code: ErrCode.ChatMsgEmpty, error: 'text can\'t be empty' });
+  if (!target) {
+    client.resp(type, pid, { code: ErrCode.ChatTargetEmpty, error: 'target can\'t be empty' }); return
+  }
+  if (!text) {
+    client.resp(type, pid, { code: ErrCode.ChatMsgEmpty, error: 'text can\'t be empty' });
+    return
+  }
   const { ctx, room } = client;
   const { player_info: sender } = client;
   const date = Date.now();
@@ -30,7 +34,8 @@ export function handle_req_chat(client: Client, req: IReqChat) {
       break;
     }
     default: {
-      return client.resp(type, pid, { code: ErrCode.ChatTargetIncorrect, error: 'target is incorrect' });
+      client.resp(type, pid, { code: ErrCode.ChatTargetIncorrect, error: 'target is incorrect' });
+      break;
     }
   }
 }

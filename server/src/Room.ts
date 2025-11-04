@@ -62,7 +62,7 @@ export class Room {
 
   }
 
-  ready(client: Client, req: IReqPlayerReady = { type: MsgEnum.PlayerReady, pid: '' }) {
+  ready(client: Client, req: IReqPlayerReady = { type: MsgEnum.PlayerReady, is_req: true, pid: '' }) {
     console.log(`[${Room.TAG}::ready]`)
     const { players } = this;
     const { player_info, room } = client;
@@ -76,7 +76,7 @@ export class Room {
     client.resp(req.type, req.pid, resp)
     return true;
   }
-  kick(req: IReqKick = { type: MsgEnum.Kick, pid: '' }) {
+  kick(req: IReqKick = { type: MsgEnum.Kick, is_req: true, pid: '' }) {
     const { players } = this;
     let client: Client | null = null
     for (const p of players) {
@@ -104,7 +104,7 @@ export class Room {
     if (!this.players.size)
       this.ctx.room_mgr.del(room)
   }
-  exit(client: Client, req: IReqExitRoom = { type: MsgEnum.ExitRoom, pid: '' }) {
+  exit(client: Client, req: IReqExitRoom = { type: MsgEnum.ExitRoom, is_req: true, pid: '' }) {
     console.log(`[${Room.TAG}::exit]`)
     const { players } = this;
     const { player_info, room } = client;
@@ -129,7 +129,7 @@ export class Room {
       this.ctx.room_mgr.del(room)
   }
 
-  join(client: Client, req: IReqJoinRoom = { type: MsgEnum.JoinRoom, pid: '' }) {
+  join(client: Client, req: IReqJoinRoom = { type: MsgEnum.JoinRoom, is_req: true, pid: '' }) {
     console.log(`[${Room.TAG}::join]`)
     const { players } = this;
     const { player_info, room } = client;
@@ -157,8 +157,9 @@ export class Room {
     return true;
   }
 
-  close(client: Client, req: IReqCloseRoom = { type: MsgEnum.CloseRoom, pid: '' }) {
+  close(client: Client, info?: TInfo<IReqCloseRoom>) {
     console.log(`[${Room.TAG}::close]`)
+    const req: IReqCloseRoom = { ...info, type: MsgEnum.CloseRoom, is_req: true, pid: '' }
     const { players } = this;
     const { player_info, room } = client;
     if (!players.has(client)) return;
@@ -176,7 +177,8 @@ export class Room {
     this.ctx.room_mgr.del(this)
   }
 
-  start(client: Client, req: IReqRoomStart = { type: MsgEnum.RoomStart, pid: '' }) {
+  start(client: Client, info?: TInfo<IReqRoomStart>) {
+    const req: IReqRoomStart = { ...info, is_req: true, type: MsgEnum.RoomStart, pid: '' }
     const { players } = this;
     if (players.size < this.min_players) {
       client.resp(req.type, req.pid, { code: ErrCode.PlayersTooFew, error: 'players are too few' }).catch(() => void 0)

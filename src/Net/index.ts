@@ -2,7 +2,7 @@ import type { IMsgReqMap, IMsgRespMap } from "./IMsgMap";
 
 export type TReq = IMsgReqMap[keyof IMsgReqMap]
 export type TResp = IMsgRespMap[keyof IMsgRespMap]
-export type TInfo<T> = Omit<T, 'pid' | 'type'>
+export type TInfo<T> = Omit<T, 'pid' | 'type' | 'is_resp' | 'is_req'>
 export * from "./_Base";
 export * from "./ErrCode";
 export * from "./IMsg_Chat";
