@@ -11,6 +11,7 @@ export * from "./IMsg_Chat";
 export * from "./IMsg_CloseRoom";
 export * from "./IMsg_CreateRoom";
 export * from "./IMsg_ExitRoom";
+export * from "./IMsg_GameTick";
 export * from "./IMsg_JoinRoom";
 export * from "./IMsg_ListRooms";
 export * from "./IMsg_PlayerInfo";
@@ -24,4 +25,3 @@ export * from "./MsgEnum";
 export * from "./req_timeout_error";
 export * from "./req_unknown_error";
 export * from "./resp_error";
-

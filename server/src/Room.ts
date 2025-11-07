@@ -1,18 +1,21 @@
+import { type Client } from './Client';
+import type { Context } from "./Context";
 import {
   ErrCode,
   IMsgRespMap,
   IReqCloseRoom, IReqCreateRoom,
   IReqExitRoom,
+  IReqGameTick,
   IReqJoinRoom, IReqKick, IReqPlayerReady, IReqRoomStart, IResp, IRespCloseRoom,
   IRespExitRoom,
+  IRespGameTick,
   IRespJoinRoom, IRespKick, IRespPlayerReady, IRoomInfo, MsgEnum, TInfo
 } from "./Net";
-import { type Client } from './Client';
 import { random_str } from './random_str';
-import type { Context } from "./Context";
 
 let room_id = 0;
 export class Room {
+
   static TAG = 'Room';
   readonly id = '' + (++room_id);
   readonly ctx: Context;
@@ -22,6 +25,7 @@ export class Room {
   max_players: number = 4;
   title: string = `ROOM_${this.id}`;
   players = new Set<Client>();
+  tick_req_map = new Map<Client, IReqGameTick>()
   get code() { return this._code; }
   get room_info(): Required<IRoomInfo> {
     return {
@@ -104,6 +108,7 @@ export class Room {
     if (!this.players.size)
       this.ctx.room_mgr.del(room)
   }
+
   exit(client: Client, req: IReqExitRoom = { type: MsgEnum.ExitRoom, is_req: true, pid: '' }) {
     console.log(`[${Room.TAG}::exit]`)
     const { players } = this;
@@ -193,5 +198,16 @@ export class Room {
     for (const c of this.players)
       if (!excludes.some(v => v === c))
         c.resp(type, '', resp).catch(e => { })
+  }
+
+  tick(client: Client, req: IReqGameTick) {
+    this.tick_req_map.set(client, req)
+    if (this.tick_req_map.size !== this.players.size)
+      return;
+    const resp: TInfo<IRespGameTick> = { list: [] }
+    for (const [client, req] of this.tick_req_map)
+      resp.list?.push({ player: client.player_info, req })
+    this.broadcast(MsgEnum.Tick, resp)
+    this.tick_req_map.clear()
   }
 }

@@ -10,6 +10,7 @@ import { ensure_not_in_room } from './ensure_not_in_room';
 import { ensure_player_info } from './ensure_player_info';
 import { ensure_room_owner } from './ensure_room_owner';
 import { handle_req_chat } from './handle_req_chat';
+import { handle_req_tick } from './handle_req_tick';
 
 let client_id = 0;
 export class Client {
@@ -40,6 +41,8 @@ export class Client {
     if (!ws) return Promise.reject(new Error(`[${Client.TAG}] not open`))
     const pid = `${++this._pid}`;
     const _req: IReq = { pid, type, is_req: true, ...msg };
+    delete (_req as any).code;
+    delete (_req as any).error;
     return new Promise<Resp>((resolve, reject) => {
       const timeout = options?.timeout || 0;
       const timerId = timeout > 0 ? setTimeout(() => {
@@ -64,6 +67,7 @@ export class Client {
       if (!this.ws)
         return reject(new Error(`ws not open`))
       const _resp: IResp = { pid, type, is_resp: true, ...resp };
+      delete (_resp as any).is_req;
       this.ws.send(JSON.stringify(_resp), (err) => {
         err ? reject(err) : resolve()
       });
@@ -188,8 +192,12 @@ export class Client {
         }
         break;
       }
-      case MsgEnum.Chat: handle_req_chat(this, req); break;
-
+      case MsgEnum.Chat:
+        handle_req_chat(this, req);
+        break;
+      case MsgEnum.Tick:
+        handle_req_tick(this, req);
+        break;
     }
   }
 }

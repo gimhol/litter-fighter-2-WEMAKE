@@ -77,7 +77,9 @@ function Player() {
     conn.callbacks.add({
       on_message: (resp) => {
         switch (resp.type) {
-          case MsgEnum.RoomStart: break;
+          case MsgEnum.RoomStart:
+            alert('!')
+            break;
         }
       }
     })

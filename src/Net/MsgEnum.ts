@@ -10,4 +10,5 @@ export enum MsgEnum {
   ListRooms = "ListRooms",
   Error = "Error",
   Chat = "Chat",
+  Tick = "Tick"
 }

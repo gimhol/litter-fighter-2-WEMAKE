@@ -3,7 +3,7 @@ import { ensure_in_room } from './ensure_in_room';
 import { ensure_player_info } from './ensure_player_info';
 import { ErrCode, IReqChat, IRespChat, TInfo } from './Net';
 
-let msg_seq = Date.now();
+export let msg_seq = Date.now();
 
 export function handle_req_chat(client: Client, req: IReqChat): void {
   if (!ensure_player_info(client, req)) return;

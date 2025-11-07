@@ -2,6 +2,7 @@ import type { IReqChat, IRespChat } from "./IMsg_Chat";
 import type { IReqCloseRoom, IRespCloseRoom } from "./IMsg_CloseRoom";
 import type { IReqCreateRoom, IRespCreateRoom } from "./IMsg_CreateRoom";
 import type { IReqExitRoom, IReqKick, IRespExitRoom, IRespKick } from "./IMsg_ExitRoom";
+import type { IReqGameTick, IRespGameTick } from "./IMsg_GameTick";
 import type { IReqJoinRoom, IRespJoinRoom } from "./IMsg_JoinRoom";
 import type { IReqListRooms, IRespListRooms } from "./IMsg_ListRooms";
 import type { IReqPlayerInfo, IRespPlayerInfo } from "./IMsg_PlayerInfo";
@@ -20,7 +21,8 @@ export interface IMsgReqMap {
   [MsgEnum.ListRooms]: IReqListRooms,
   [MsgEnum.Error]: IReq<MsgEnum.Error>,
   [MsgEnum.Kick]: IReqKick,
-  [MsgEnum.Chat]: IReqChat
+  [MsgEnum.Chat]: IReqChat,
+  [MsgEnum.Tick]: IReqGameTick,
 }
 export interface IMsgRespMap {
   [MsgEnum.PlayerInfo]: IRespPlayerInfo,
@@ -35,4 +37,5 @@ export interface IMsgRespMap {
   [MsgEnum.Error]: IResp<MsgEnum.Error>,
   [MsgEnum.Kick]: IRespKick,
   [MsgEnum.Chat]: IRespChat,
+  [MsgEnum.Tick]: IRespGameTick,
 }
