@@ -12,6 +12,8 @@ export class Scene {
   protected _canvas_ob = new MutationObserver(() => this.on_win_resize());
   readonly inner: T.Scene;
   readonly lf2: LF2;
+  w: number = 0;
+  h: number = 0;
 
   constructor(lf2: LF2) {
     this.inner = new T.Scene();
@@ -46,7 +48,7 @@ export class Scene {
     }
     this._renderer = void 0;
     if (canvas) {
-      const { width: w, height: h } = canvas.getBoundingClientRect()
+      const { w, h } = this
       this._canvas_ob.observe(canvas, { attributes: true, attributeFilter: ['style'] })
       this._renderer = new T.WebGLRenderer({ canvas, premultipliedAlpha: false });
       this._renderer.setSize(w, h, false);
@@ -58,12 +60,6 @@ export class Scene {
       this._canvas_ob.disconnect()
     }
   }
-  w(w: any, h: any, arg2: boolean) {
-    throw new Error("Method not implemented.");
-  }
-  h(w: any, h: any, arg2: boolean) {
-    throw new Error("Method not implemented.");
-  }
   add_camera(...cameras: T.Camera[]) {
     for (const camera of cameras) {
       if (this._cameras.has(camera)) continue;
@@ -73,7 +69,7 @@ export class Scene {
   }
 
   set_size(w: number, h: number): this {
-    this._renderer?.setSize(w, h, false);
+    this._renderer?.setSize(this.w = w, this.h = h, false);
     return this;
   }
 
