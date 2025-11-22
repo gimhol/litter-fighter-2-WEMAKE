@@ -48,7 +48,7 @@ export class Scene {
     }
     this._renderer = void 0;
     if (canvas) {
-      const { w, h } = this
+      const { w, h } = this;
       this._canvas_ob.observe(canvas, { attributes: true, attributeFilter: ['style'] })
       this._renderer = new T.WebGLRenderer({ canvas, premultipliedAlpha: false });
       this._renderer.setSize(w, h, false);
@@ -69,7 +69,9 @@ export class Scene {
   }
 
   set_size(w: number, h: number): this {
-    this._renderer?.setSize(this.w = w, this.h = h, false);
+    this.w = w;
+    this.h = h;
+    this._renderer?.setSize(w, h, false);
     return this;
   }
 
